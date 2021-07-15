@@ -25,6 +25,8 @@ Base endpoint is `https://8pfnywkzv9.execute-api.us-east-2.amazonaws.com/dev`
 | Database | Generating a hierchical tree of a certain database `{type}` based on the attribute `parent_id` and `_id` This is particularly useful for creating the `microapps` folder tree or nested `group` tree | GET |  /db_tree/{type} | 
 | Feed | Query records from a database `feeds` with options to filter returns. This endpoint uses [this](https://www.npmjs.com/package/api-query-params) library for filtering  | GET |  /db/{type} | 
 | Feed Sources | Create the Feed Sources so the Feed Cron Job can fetch from them to create `Feed` objects | POST |  /db/feed_sources | 
+| Microapps | Interact with the `microapps` collection | GET / POST |  /db/feed_sources | 
+| Microapps | Interact with one `microapps` collection object | GET / PUT / DELETE |  /db/feed_sources/{_id} | 
 
 ## Create Feed Sources
 Method: *POST* to create; *GET* to read 
@@ -67,3 +69,11 @@ Endpoint:  `/db/feed_sources`
 
 ```
 
+##  Microapps
+Method: *POST* to create; *GET* to read 
+Endpoint:  `/db/microapps` or 
+
+Method: *PUT* to update *DELETE* to delete *GET* to read one
+Endpoint: `/db/microapps/{_id}`
+
+***SUMMARY:*** This endpoint is to manage the `microapps` collection. Microapp is the heart and soul of this mobile app application project. It allows dashboard administrator to manage content of the mobile app dynamically. It has a number of *classes* which tells the mobile app which *renderer* to use in the mobile app and that each different *class* will have a different *data model*. Keep reading to find out various classes available so far in this app.  
