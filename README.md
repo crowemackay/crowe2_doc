@@ -24,9 +24,11 @@ Base endpoint is `https://8pfnywkzv9.execute-api.us-east-2.amazonaws.com/dev`
 | Database | Delete record(s) from a database by a single `{_id}` | DELETE |  /db/{type}/{_id} | 
 | Database | Generating a hierchical tree of a certain database `{type}` based on the attribute `parent_id` and `_id` This is particularly useful for creating the `microapps` folder tree or nested `group` tree | GET |  /db_tree/{type} | 
 | Feed | Query records from a database `feeds` with options to filter returns. This endpoint uses [this](https://www.npmjs.com/package/api-query-params) library for filtering  | GET |  /db/{type} | 
-| Feed Sources | Create the Feed Sources so the Feed Cron Job can fetch from them to create `Feed` objects | POST |  /db/feed_sources | 
-| Microapps | Interact with the `microapps` collection | GET / POST |  /db/feed_sources | 
-| Microapps | Interact with one `microapps` collection object | GET / PUT / DELETE |  /db/feed_sources/{_id} | 
+| Feed Sources | Create the Feed Sources so the Feed Cron Job can fetch from them to create `Feed` objects | POST, GET |  /db/feed_sources | 
+| Feed Sources | Update the Feed Sources so the Feed Cron Job can fetch from them to create `Feed` objects | PUT, DELETE |  /db/feed_sources/{_id} | 
+| Microapps | Interact with the `microapps` collection | GET / POST |  /db/microapps | 
+| Microapps | Interact with the `microapps` collection and return hierarchical structure | GET / POST |  /db_tree/microapps | 
+| Microapps | Interact with one `microapps` collection object | GET / PUT / DELETE |  /db/microapps/{_id} | 
 
 ## Create Feed Sources
 Method: *POST* to create; *GET* to read 
@@ -42,6 +44,7 @@ Endpoint:  `/db/feed_sources`
 
 | Attribute | Type | Description |
 |--|--|--|
+| name | String | Descriptive name for the resource endpoint |
 | default_object | Object | Telling the backend what the default feed author is in case it is not provided by the XML or JSON |
 | default_object.user.picture | String | The default user picture of a feed from this feed source |
 | format | String | `JSON` or `XML` so the backend knows which parser to use |
@@ -64,14 +67,48 @@ Endpoint:  `/db/feed_sources`
   "objectmapper": "feed.entry.[].media:group.media:title=[].content&feed.entry.[].media:group.media:thumbnail.@_url=[].media[0]&feed.entry.[].link.@_href=[].web_url&feed.entry.[].author.name=[].user.full_name&feed.entry.[].author.uri=[].user.profile&feed.entry.[].published=[].published_date",
   "auto_published": true,
   "moment_time_format": "YYYY-MM-DDTHH:mm:ssZ",
-  "auth0_role": "Administrator" //may modify later based on Auth0 schema
+  "auth0_role": "rol_Fk5CB6VpSluwKcMp" //may modify later based on Auth0 schema
 }
 
 ```
 
 ##  Microapps
 Method: *POST* to create; *GET* to read 
-Endpoint:  `/db/microapps` or 
+Endpoint:  `/db/microapps` or `/db_tree/microapps`
+
+#### POST Request Body
+
+| Attribute | Type | Description |
+|--|--|--|
+| class | String | FOLDER or WEB or MEDIA or PDF |
+| title | String | Title string for the microapp |
+| description | String | Description for the microapp which will be displayed in the app |
+| icon | String | https url string for icon image png |
+| order | Integer | for sorting which microapp is listed first |
+| scope | String | Auth0 scope to tell the mobile app about access, if null, then it is allowed for anyone to access |
+| is_hidden | Boolean | Telling the mobile app if it should be shown. This attribute will override scope |
+| payload | Object | This is the object that carries the specific attributes for each microapp class attribute. Each different class will have different schema. |
+| payload.feed_collection | String | for class MEDIA only: the api url to the collection i.e. "/db/media?data.tags=5fd9ad6b391ef3000858ff77" |
+| payload.url | String | for class WEB and PDF only: the url to link to |
+| payload.is_user_query | Boolean | for class WEB only: letting the mobile app know whether to append user_id query string to the web url provided so the web resource can know which user is accessing the link |
+
+```
+// POST request body
+
+{
+  "class": "FOLDER",
+  "title": "Title One",
+  "icon": "https://assets.tcog.hk/aemc2zfhz5.png",
+  "description": "Description text",
+  "order": 1,
+  "scope": "READ:FEED - Business Trends Podcast",
+  "is_hidden": false,
+  "payload": {
+  
+  }
+}
+
+```
 
 Method: *PUT* to update *DELETE* to delete *GET* to read one
 Endpoint: `/db/microapps/{_id}`
